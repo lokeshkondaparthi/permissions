@@ -19,6 +19,7 @@ The above method is executed when permission granted at any time. So you can wri
     public void permissionGranted(String permission) {
         if (permission.equals(Manifest.permission.READ_CONTACTS))
             Toast.makeText(this, "Contact read permission granted", Toast.LENGTH_SHORT).show();
+            // TO-DO here you can write the code/logic to get contacts. 
     }
 
   </p>
