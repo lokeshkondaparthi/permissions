@@ -27,9 +27,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     @Override
     public void permissionGranted(String permission) {
-        if (permission.equals(Manifest.permission.ACCESS_FINE_LOCATION))
+        if (permission.equals(Manifest.permission.ACCESS_FINE_LOCATION), 10)
             Toast.makeText(this, "Location permission granted", Toast.LENGTH_SHORT).show();
-        if (permission.equals(Manifest.permission.READ_CONTACTS))
+        if (permission.equals(Manifest.permission.READ_CONTACTS), 20)
             Toast.makeText(this, "Contact read permission granted", Toast.LENGTH_SHORT).show();
     }
 
@@ -37,12 +37,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.bt_location:
-                requestPermission(Manifest.permission.ACCESS_FINE_LOCATION,
+                requestPermission(Manifest.permission.ACCESS_FINE_LOCATION, 10, 
                          "Please accept now location permissions",
                         "You denied permission of location, please accept in permissions settings page");
                 break;
             case R.id.bt_contact:
-                requestPermission(Manifest.permission.READ_CONTACTS,
+                requestPermission(Manifest.permission.READ_CONTACTS, 20, 
                         "Please accept now contact permission",
                         "You denied permission of contact, please accept in permissions settings page");
                 break;
