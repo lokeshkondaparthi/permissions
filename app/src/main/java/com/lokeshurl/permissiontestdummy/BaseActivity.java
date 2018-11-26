@@ -14,12 +14,11 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 
 import java.util.Random;
-
 public abstract class BaseActivity extends AppCompatActivity {
-    public abstract void permissionGranted(String permission);
-    public static int REQUEST_CODE_OF_MANUAL_PERMISSION = 99;
+    public abstract void permissionGranted(String permission, int requestCode);
     public String manualPermissionDesc;
     public String permission;
+    public int requestCode;
     //public abstract void onFragmentInteraction(String grantedPermissionDesc);
 
     /**
@@ -27,9 +26,10 @@ public abstract class BaseActivity extends AppCompatActivity {
      * @param permission run-time permission
      * @param description for explanation dialogue.
      */
-    protected void requestPermission(String permission, String description, String manualPermissionDesc) {
+    protected void requestPermission(String permission, int requestCode, String description, String manualPermissionDesc) {
         this.manualPermissionDesc = manualPermissionDesc;
         this.permission = permission;
+        this.requestCode = requestCode;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             /* Read contacts*/
             if (ContextCompat.checkSelfPermission(this, permission)
@@ -39,13 +39,13 @@ public abstract class BaseActivity extends AppCompatActivity {
                     showPermissionDialog(permission, description);
                 }else {
                     ActivityCompat.requestPermissions( this, new String[]{permission},
-                            new Random().nextInt(100));
+                            requestCode);
                 }
             } else {
-                permissionGranted(permission);
+                permissionGranted(permission, this.requestCode);
             }
         } else {
-            permissionGranted(permission);
+            permissionGranted(permission, this.requestCode);
         }
     }
     @Override
@@ -54,7 +54,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (grantResults.length > 0) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
-                permissionGranted(permissions[0]);
+                permissionGranted(permissions[0], this.requestCode);
             else if (grantResults[0] == PackageManager.PERMISSION_DENIED &&
                     !ActivityCompat.shouldShowRequestPermissionRationale(this,
                             permissions[0])) {
@@ -74,10 +74,11 @@ public abstract class BaseActivity extends AppCompatActivity {
                 if (permission == null) {
                     Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                     intent.setData(Uri.fromParts("package", getPackageName(), null));
-                    startActivityForResult(intent, REQUEST_CODE_OF_MANUAL_PERMISSION);
+                    // Same request code transferred to activity.
+                    startActivityForResult(intent, requestCode);
                 }else{
                     ActivityCompat.requestPermissions(BaseActivity.this, new String[]{permission},
-                            new Random().nextInt(100));
+                            requestCode);
                 }
                 dialog.dismiss();
             }
@@ -94,10 +95,10 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE_OF_MANUAL_PERMISSION ) {
+        if (this.requestCode == requestCode) {
           if(ContextCompat.checkSelfPermission(this, permission)
                   == PackageManager.PERMISSION_GRANTED)
-            permissionGranted(permission);
+            permissionGranted(permission, this.requestCode);
         }
     }
 }
